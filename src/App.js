@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useMemo } from 'react';
 import axios from 'axios';
 
 const App = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
+  const [count,setCount] = useState(0);
 
+  const handleIncrement = ()=>{
+    setCount(count + 1);
+  }
   useEffect(() => {
     // using axios
     // const fetchData = async () => {
@@ -29,6 +33,7 @@ const App = () => {
     // };
 
     // using fetch with async await
+
     const fetchData = async ()=>
     {
       try{
@@ -44,9 +49,14 @@ const App = () => {
     fetchData();
   }, []);
 
-  const filteredData = data.filter(user =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  );
+
+  const filteredData = useMemo(()=> data?.filter(user =>{
+
+    console.log('rendered filter method')
+    return user.name.toLowerCase().includes(search.toLowerCase())
+  }
+    )
+  ,[data,search])
 
   return (
     <div className='container'>
@@ -57,10 +67,12 @@ const App = () => {
         onChange={(e) => setSearch(e.target.value)}
       />
       <ul>
-        {filteredData.map(user => (
+        {filteredData?.map(user => (
           <li key={user.id}>{user.name}</li>
         ))}
       </ul>
+      <h3>count: {count}</h3>
+      <button onClick={handleIncrement}>Increment Count</button>
     </div>
   );
 };
